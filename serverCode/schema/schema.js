@@ -48,7 +48,7 @@ const AuthorType = new GraphQLObjectType({
     books:{ //child
       type: new GraphQLList(BookType), //GraphQLList b.c it could be >1 of BookType
       resolve(parent, args){
-        return _.filter(books, {authorid:parent.id});
+        return _.filter(books, {authorId:parent.id}); //we take the parent id and look in the books array. we are looking for a match for the authorid that matches parent.id. everything else we filter out the array.
       }
     }
   })
@@ -72,6 +72,18 @@ const RootQuery = new GraphQLObjectType({
       args: { id: {type: GraphQLID} },
       resolve(parent, args){
         return _.find(authors, {id: args.id});  //look through array and match the args.id (query) to the id.
+      }
+    },
+    books:{ //so you can query all the books.
+      type: new GraphQLList(BookType),
+      resolve(parent, args){
+        return books  //entire list of books
+      }
+    },
+    authors: {
+      type: new GraphQLList(AuthorType),
+        resolve(parent, args){
+          return authors
       }
     }
 
