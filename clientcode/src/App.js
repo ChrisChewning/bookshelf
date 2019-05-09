@@ -3,6 +3,7 @@ import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo'; //glue layer.
 
 import BookList from './components/BookList';
+import AddBook from './components/AddBook';
 
 //apollo client setup to make requests to graphql endpoint.
 const client = new ApolloClient({
@@ -17,6 +18,7 @@ class App extends Component{
       <div id="main">
         <h1>Kids Book List</h1>
         <BookList />
+        <AddBook />
       </div>
     </ApolloProvider>
   );
