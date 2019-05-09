@@ -10,13 +10,10 @@ const {
   GraphQLID,
   GraphQLInt,
   GraphQLList
-} = graphql
-//destructures. grab diff. properties from graphql package.
+} = graphql  //from graphQL package.
 const _ = require('lodash');
 
 
-
-//define our 1st object type, BookType
 const BookType = new GraphQLObjectType({
   name: 'Book',
   fields: () => ({
@@ -25,9 +22,9 @@ const BookType = new GraphQLObjectType({
     genre: {type: GraphQLString},
     author: {
       type: AuthorType,
-      resolve(parent, args){
-        return _.find(authors, {id: parent.authorId});  //look in authors array. which one matches book query.
-      } //resolve fn looks at data and determins what is needed.
+      resolve(parent, args){ // fn looks at data and determins what is needed.
+        return Author.findById(parent.authorId); //look in the Author collection for any book (parent) record with the author id.
+      }
     }
   })
 });
@@ -40,7 +37,8 @@ const AuthorType = new GraphQLObjectType({
     books:{ //child
       type: new GraphQLList(BookType), //GraphQLList b.c it could be >1 of BookType
       resolve(parent, args){
-        return _.filter(books, {authorId:parent.id}); //we take the parent id and look in the books array. we are looking for a match for the authorid that matches parent.id. everything else we filter out the array.
+        return Book.find({ authorId:parent.id }); //list of books associated w author
+        //lodash was return _.filter(books, {authorId:parent.id});
       }
     }
   })
@@ -56,34 +54,70 @@ const RootQuery = new GraphQLObjectType({
       args: {id: { type: GraphQLID}}, //args we expect to go w the query.
       resolve(parent, args){ //resolve fn finds the data.
         //fn to get data from db/other source. args is the id field.
-        return _.find(books, {id: args.id}); //use lodash method to look through books array.
+        return Book.findById(args.id);
       }
     },
     author:{
       type:  AuthorType,
       args: { id: {type: GraphQLID} },
       resolve(parent, args){
-        return _.find(authors, {id: args.id});  //look through array and match the args.id (query) to the id.
+        return Author.findById(args.id);
       }
     },
     books:{ //so you can query all the books.
       type: new GraphQLList(BookType),
       resolve(parent, args){
-        return books  //entire list of books
+        return Book.find({}); //empty obj returns all books bc they all match
       }
     },
     authors: {
       type: new GraphQLList(AuthorType),
         resolve(parent, args){
-          return authors
+          return Author.find({});
       }
     }
 
   }
 })
 
+const Mutation = new GraphQLObjectType({
+  name: 'Mutation',
+  fields:{
+    addAuthor: { //allows user to add author to db
+      type: AuthorType,
+      args: { //what they want to send from the frontend.
+        name: {type: GraphQLString}
+      },
+      resolve(parent, args){
+        let author = new Author({ //this is to the Author model.
+          name: args.name
+        });
+        return author.save(); //save method from Mongoose. return what you save in db.
+      }
+    },
+    addBook: {
+      type: BookType,
+      args: {
+        name: {type: GraphQLString},
+        genre: {type: GraphQLString},
+        authorId: {type: GraphQLID}
+      },
+      resolve(parent, args){
+        let book = new Book({ //using Book model.
+        name: args.name,
+        genre: args.genre,
+        authorId: args.authorId
+      });
+      return book.save();
+    }
+  }
+}
+})
+
+
 
 //defining which query we're allowing the user to use.
 module.exports = new GraphQLSchema({
-  query: RootQuery
+  query: RootQuery,
+  mutation: Mutation
 });

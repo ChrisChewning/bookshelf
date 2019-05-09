@@ -6,10 +6,13 @@ const mongoose = require('mongoose');
 const app = express();
 
 //connect to db
-mongoose.connect('mongodb+srv://chewningcl:Redsox19!@bookcluster-fzerv.mongodb.net/test?retryWrites=true');
+mongoose.connect('mongodb+srv://chewningcl:Redsox19!@bookcluster-fzerv.mongodb.net/test?retryWrites=true', { useNewUrlParser: true });
+
 mongoose.connection.once('open', () => {
+  useNewUrlParser: true
   console.log('connected to db')
 })
+//
 
 
 //middleware
