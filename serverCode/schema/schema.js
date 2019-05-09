@@ -9,9 +9,10 @@ const {
   GraphQLSchema,
   GraphQLID,
   GraphQLInt,
-  GraphQLList
-} = graphql  //from graphQL package.
-const _ = require('lodash');
+  GraphQLList,
+  GraphQLNonNull
+} = graphql;  //from graphQL package.
+//const _ = require('lodash');
 
 
 const BookType = new GraphQLObjectType({
@@ -86,7 +87,7 @@ const Mutation = new GraphQLObjectType({
     addAuthor: { //allows user to add author to db
       type: AuthorType,
       args: { //what they want to send from the frontend.
-        name: {type: GraphQLString}
+        name: {type: new GraphQLNonNull(GraphQLString)}
       },
       resolve(parent, args){
         let author = new Author({ //this is to the Author model.
@@ -98,9 +99,9 @@ const Mutation = new GraphQLObjectType({
     addBook: {
       type: BookType,
       args: {
-        name: {type: GraphQLString},
-        genre: {type: GraphQLString},
-        authorId: {type: GraphQLID}
+        name: {type: new GraphQLNonNull(GraphQLString)},
+        genre: {type: new GraphQLNonNull(GraphQLString)},
+        authorId: {type: new GraphQLNonNull(GraphQLID)}
       },
       resolve(parent, args){
         let book = new Book({ //using Book model.
