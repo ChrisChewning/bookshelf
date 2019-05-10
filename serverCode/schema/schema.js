@@ -11,9 +11,7 @@ const {
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull
-} = graphql;  //from graphQL package.
-//const _ = require('lodash');
-
+} = graphql;
 
 const BookType = new GraphQLObjectType({
   name: 'Book',
@@ -23,8 +21,9 @@ const BookType = new GraphQLObjectType({
     genre: {type: GraphQLString},
     author: {
       type: AuthorType,
-      resolve(parent, args){ // fn looks at data and determins what is needed.
-        return Author.findById(parent.authorId); //look in the Author collection for any book (parent) record with the author id.
+      resolve(parent, args){
+        return Author.findById(parent.authorId);
+        //look in Author collection for any book (parent) record w authorId.
       }
     }
   })
@@ -36,25 +35,23 @@ const AuthorType = new GraphQLObjectType({
     id: {type: GraphQLID},
     name: {type: GraphQLString},
     books:{ //child
-      type: new GraphQLList(BookType), //GraphQLList b.c it could be >1 of BookType
+      type: new GraphQLList(BookType),
       resolve(parent, args){
-        return Book.find({ authorId:parent.id }); //list of books associated w author
-        //lodash was return _.filter(books, {authorId:parent.id});
+        return Book.find({ authorId:parent.id });
+        //list of books associated w author. note: not findById
       }
     }
   })
 });
 
 
-//defines how we initially jump into the graph. the fields are the options on how to do so.
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
   fields: {
-    book:{ //when someone queries a book,use this object to get it.
+    book:{
       type: BookType,
-      args: {id: { type: GraphQLID}}, //args we expect to go w the query.
-      resolve(parent, args){ //resolve fn finds the data.
-        //fn to get data from db/other source. args is the id field.
+      args: {id: { type: GraphQLID}},
+      resolve(parent, args){
         return Book.findById(args.id);
       }
     },
@@ -65,10 +62,10 @@ const RootQuery = new GraphQLObjectType({
         return Author.findById(args.id);
       }
     },
-    books:{ //so you can query all the books.
+    books:{
       type: new GraphQLList(BookType),
       resolve(parent, args){
-        return Book.find({}); //empty obj returns all books bc they all match
+        return Book.find({});
       }
     },
     authors: {
@@ -77,23 +74,22 @@ const RootQuery = new GraphQLObjectType({
           return Author.find({});
       }
     }
-
   }
 })
 
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields:{
-    addAuthor: { //allows user to add author to db
+    addAuthor: {
       type: AuthorType,
-      args: { //what they want to send from the frontend.
+      args: {
         name: {type: new GraphQLNonNull(GraphQLString)}
       },
       resolve(parent, args){
-        let author = new Author({ //this is to the Author model.
+        let author = new Author({
           name: args.name
         });
-        return author.save(); //save method from Mongoose. return what you save in db.
+        return author.save();
       }
     },
     addBook: {
@@ -104,7 +100,7 @@ const Mutation = new GraphQLObjectType({
         authorId: {type: new GraphQLNonNull(GraphQLID)}
       },
       resolve(parent, args){
-        let book = new Book({ //using Book model.
+        let book = new Book({
         name: args.name,
         genre: args.genre,
         authorId: args.authorId
@@ -115,10 +111,20 @@ const Mutation = new GraphQLObjectType({
 }
 })
 
-
-
-//defining which query we're allowing the user to use.
 module.exports = new GraphQLSchema({
   query: RootQuery,
   mutation: Mutation
 });
+
+
+//NOTES:
+//set what you want out of the graphQL package in the object.
+
+//RootQuery defines how we initially jump into the graph.
+//The fields are the options on how to do so. ex: book is when someone queries a book you look in RottQuery, then the book object. Then you see the type, which sets the schema, the args, which go with the query, and resolve, which finds the data from your db or other source. You return will be to the id or an empty obj, b.c an empty obj will match everything.
+
+
+//Mutation allows changes.
+//Your type needs to match up with what's already set (AuthorType, BookType). args is what needs to be sent from the frontend. The resolve fn let book = new Book is saying to use the Book model from Mongoose and set those properties. The  save method is from Mongoose. You want to return what you've saved there.
+
+//export what we're allowing the user to use.

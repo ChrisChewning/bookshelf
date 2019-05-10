@@ -7,7 +7,7 @@ class BookList extends Component {
   constructor(props){
     super(props);
     this.state = {
-      selected: null //keeps track of which book is clicked on.
+      selected: null
     }
   }
 
@@ -36,9 +36,11 @@ class BookList extends Component {
   }
 
 }
-//prop on BookDetails componenet will update when we click on diff. books
 
 export default graphql(getBooksQuery)(BookList);
-//bind this query to this component. now inside the component you have access to this data. it is stored in the component's props. you can console.log(this.props)
 
+
+//NOTES:
+//this.state.selected keeps track of which book is clicked on. set to null at 1st. The prop on BookDetails componenet will update when we click on diff. books
 //this.display.books   this = component. displayBooks() is the method inside.
+//export statement binds the getBooksQuery to the BookLIst component. now inside the component you have access to this data. it is stored in the component's props. you can console.log(this.props)

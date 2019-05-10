@@ -11,10 +11,11 @@ class AddBook extends Component {
       authorId: ""
     };
   }
+
   displayAuthors(){
     var data = this.props.getAuthorsQuery;
     if(data.loading){
-      return( <option disabled>Loading authors...</option>)
+      return(<option disabled>Loading authors...</option>)
     } else {
       return data.authors.map(author => {
         return(<option key={author.id} value={author.id}> {author.name}</option> );
@@ -24,7 +25,7 @@ class AddBook extends Component {
 
   submitForm(e){
     e.preventDefault();
-    this.props.addBookMutation({ //invokes the graphql fn
+    this.props.addBookMutation({
       variables: {
         name: this.state.name,
         genre: this.state.genre,
@@ -34,7 +35,7 @@ class AddBook extends Component {
     });
   }
 
-//bind to the component itself.
+
   render(){
     return(
       <form id="add book" onSubmit={this.submitForm.bind(this)}>
@@ -64,6 +65,13 @@ class AddBook extends Component {
   }
 }
 
-export default compose(  //can bind multiple queries & mutations through compose
-  graphql(getAuthorsQuery, {name: "getAuthorsQuery"}), //query
+export default compose(
+  graphql(getAuthorsQuery, {name: "getAuthorsQuery"}),
   graphql(addBookMutation, {name: "addBookMutation"}))(AddBook)
+
+
+
+//NOTES:
+//When the form is submitted this.props.addBookMutation invokes the graphql fn
+//refetch grabs it from the db once the db has it saved. Otherwise it saves to the backend but the frontend doesn't show it.
+//compose is used so multiple queries and mutations can be bound to the component at once. In this case you see the AuthorsQuery and the addBookMutation.

@@ -36,7 +36,7 @@ class BookDetails extends Component {
   }
 }
 
-//bind the query getBookQuery to the component BookDetails
+
 export default graphql(getBookQuery, {
   options: (props) => {
     return {
@@ -48,3 +48,5 @@ export default graphql(getBookQuery, {
 })(BookDetails)
 
 //notes: whenever props gets updated here the fn gets refired. That resets the variable for this query. that is the data property when you log it out.
+
+//bind the query getBookQuery to the component BookDetails

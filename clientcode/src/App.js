@@ -1,11 +1,10 @@
 import React, {Component } from 'react';
 import ApolloClient from 'apollo-boost';
-import { ApolloProvider } from 'react-apollo'; //glue layer.
-
+import { ApolloProvider } from 'react-apollo';
 import BookList from './components/BookList';
 import AddBook from './components/AddBook';
 
-//apollo client setup to make requests to graphql endpoint.
+
 const client = new ApolloClient({
   uri: 'http://localhost:4000/graphql'
 })
@@ -27,4 +26,7 @@ class App extends Component{
 
 export default App;
 
-//ApolloProvider wraps the div. It takes data from Apollo when receives it from server and inject into React application.
+
+//NOTES:
+//ApolloProvider is basically a glue layer b.w the frontend and the backend. It wraps the div and takes data from Apollo when it recieves the data from the server. Then it injects the data into the React application.
+//ApolloClient makes requests go to graphql endpoint.
