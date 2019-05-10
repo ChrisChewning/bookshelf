@@ -28,7 +28,26 @@ const addBookMutation = gql`
   }
 `
 
-export {getBooksQuery, getAuthorsQuery, addBookMutation};
+//query for single book w specific id. bind the id. get author details. get all the other books the author has written.
+const getBookQuery = gql`
+  query($id: ID){
+    book(id: $id){
+      id
+      name
+      genre
+      author {
+        id
+        name
+        books{
+          name
+          id
+        }
+      }
+    }
+  }
+`
+
+export {getBooksQuery, getAuthorsQuery, addBookMutation, getBookQuery};
 
 //addBookMutation NOTES:
 //b.c it's gql you need the template string.
